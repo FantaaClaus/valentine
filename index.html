@@ -156,7 +156,7 @@ const overlay = document.getElementById("overlay");
 const overlayMsg = document.getElementById("overlayMsg");
 const result = document.getElementById("result");
 
-/* ---------- CONFETTI ---------- */
+/* CONFETTI */
 const confettiCanvas = document.getElementById("confettiCanvas");
 confettiCanvas.width = innerWidth * devicePixelRatio;
 confettiCanvas.height = innerHeight * devicePixelRatio;
@@ -166,20 +166,18 @@ function fullConfetti() {
   confettiInstance({ particleCount: 500, spread: 170, origin: { y: 0.6 } });
 }
 
-/* ---------- YES BUTTON GROWTH ---------- */
+/* YES GROWTH */
 let yesScale = 1;
-
 function growYes() {
   const maxScale = Math.min(
     (window.innerWidth * 0.85) / yesBtn.offsetWidth,
     8
   );
-
   yesScale = Math.min(maxScale, yesScale + 0.15);
   yesBtn.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
 }
 
-/* ---------- NO MOVEMENT ---------- */
+/* NO MOVEMENT */
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
@@ -215,7 +213,7 @@ zone.addEventListener("pointermove", e => {
   if (d < 130) moveNo(e.clientX, e.clientY);
 });
 
-/* ---------- NO CLICK ---------- */
+/* NO CLICK */
 let noClicks = 0;
 let loading = false;
 
@@ -243,7 +241,7 @@ noBtn.addEventListener("click", e => {
   }, 2400);
 });
 
-/* ---------- YES CLICK ---------- */
+/* YES CLICK */
 yesBtn.addEventListener("click", () => {
   zone.style.display = "none";
   result.style.display = "block";
