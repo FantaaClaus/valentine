@@ -13,7 +13,6 @@
       --bg2: #ffeef6;
       --card: #ffffffcc;
       --yes: #ff3b7a;
-      --yesHover: #ff1f68;
     }
 
     * { box-sizing: border-box; }
@@ -35,9 +34,9 @@
 
     @keyframes shake {
       0% { transform: translate(0); }
-      25% { transform: translate(-6px, 4px); }
-      50% { transform: translate(6px, -4px); }
-      75% { transform: translate(-4px, -6px); }
+      25% { transform: translate(-4px, 3px); }
+      50% { transform: translate(4px, -3px); }
+      75% { transform: translate(-3px, -4px); }
       100% { transform: translate(0); }
     }
 
@@ -61,7 +60,7 @@
 
     h1 {
       font-size: clamp(26px, 4vw, 44px);
-      margin: 12px 0 18px;
+      margin-bottom: 18px;
     }
 
     .button-zone {
@@ -83,7 +82,6 @@
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(0,0,0,.14);
       user-select: none;
-      -webkit-tap-highlight-color: transparent;
     }
 
     #yesBtn {
@@ -106,18 +104,17 @@
       opacity: .7;
     }
 
-    /* ---------- LOADING OVERLAY ---------- */
+    /* ---------- OVERLAY ---------- */
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255,255,255,.95);
       display: none;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      z-index: 20;
       border-radius: 22px;
-      animation: fadeIn .2s ease;
+      z-index: 20;
     }
 
     .spinner {
@@ -134,23 +131,12 @@
       to { transform: rotate(360deg); }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
     .overlay-message {
       font-size: 20px;
       font-weight: 800;
       color: #ff1f68;
-      margin-top: 8px;
       text-align: center;
-      animation: pop .3s ease;
-    }
-
-    @keyframes pop {
-      from { transform: scale(.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      max-width: 90%;
     }
 
     .result {
@@ -171,13 +157,12 @@
     <button id="noBtn">No</button>
   </section>
 
-  <div class="hint" id="hint">You can try saying no 😈</div>
+  <div class="hint" id="hint">You *can* click no… if you dare 😈</div>
 
   <section class="result" id="result">
-    <h2>YAYYYYY 💖💥</h2>
+    <h2>YAY 💖💥</h2>
   </section>
 
-  <!-- LOADING OVERLAY -->
   <div class="overlay" id="overlay">
     <div class="spinner"></div>
     <div class="overlay-message" id="overlayMsg">Loading…</div>
@@ -188,10 +173,10 @@
 const zone = document.getElementById("zone");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
-const hint = document.getElementById("hint");
-const result = document.getElementById("result");
 const overlay = document.getElementById("overlay");
 const overlayMsg = document.getElementById("overlayMsg");
+const hint = document.getElementById("hint");
+const result = document.getElementById("result");
 
 /* ---------- CONFETTI ---------- */
 const confettiCanvas = document.getElementById("confettiCanvas");
@@ -203,26 +188,23 @@ function fullConfetti() {
   confettiInstance({ particleCount: 400, spread: 160, origin: { x: .5, y: .6 } });
 }
 
-/* ---------- YES GROWS MASSIVE ---------- */
+/* ---------- YES GROWTH ---------- */
 let yesScale = 1;
 function growYes() {
-  yesScale = Math.min(7, yesScale + 0.35);
+  yesScale = Math.min(6, yesScale + 0.25);
   yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
 }
 
-/* ---------- YES HUNTS ---------- */
-zone.addEventListener("pointermove", e => {
-  const z = zone.getBoundingClientRect();
-  const x = e.clientX - z.left - yesBtn.offsetWidth / 2;
-  yesBtn.style.left = Math.max(0, Math.min(z.width, x)) + "px";
-});
-
-/* ---------- NO TELEPORTS ---------- */
+/* ---------- NO TELEPORT (LESS AGGRESSIVE) ---------- */
 function teleportNo() {
   const z = zone.getBoundingClientRect();
   const b = noBtn.getBoundingClientRect();
-  noBtn.style.left = Math.random() * (z.width - b.width) + "px";
-  noBtn.style.top = Math.random() * (z.height - b.height) + "px";
+
+  const maxX = z.width - b.width;
+  const maxY = z.height - b.height;
+
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
 
   document.body.classList.add("shake");
   setTimeout(() => document.body.classList.remove("shake"), 200);
@@ -230,26 +212,32 @@ function teleportNo() {
   growYes();
 }
 
-/* ---------- FAKE LOADING ON NO ---------- */
+/* ---------- NO CLICK PHRASES ---------- */
+let noClicks = 0;
 let loading = false;
 
 noBtn.addEventListener("pointerdown", e => {
   e.preventDefault();
   if (loading) return;
+
   loading = true;
+  noClicks++;
 
   overlay.style.display = "flex";
   overlayMsg.textContent = "Loading…";
 
   setTimeout(() => {
-    overlayMsg.textContent = "oh, so you actually hate me?";
-  }, 1200);
+    overlayMsg.textContent =
+      noClicks === 1
+        ? "oh, so you actually hate me?"
+        : "why do you keep trying to decline my valentine request?";
+  }, 1000);
 
   setTimeout(() => {
     overlay.style.display = "none";
     loading = false;
     teleportNo();
-  }, 2600);
+  }, 2400);
 });
 
 /* ---------- YES CLICK ---------- */
